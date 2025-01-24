@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Historical Fiction Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Historical Fiction Story Generator</h1>
+        <div class="subtitle">Create unique stories inspired by real historical events</div>
+        
+        <div class="event-buttons">
+            <button class="event-btn" data-event="World War II">World War II</button>
+            <button class="event-btn" data-event="Renaissance">Renaissance</button>
+            <button class="event-btn" data-event="Ancient Egypt">Ancient Egypt</button>
+        </div>
+
+        <div id="chat-container">
+            <div id="chat-messages"></div>
+            <div id="input-area">
+                <input type="text" id="user-input" placeholder="Or enter your own historical event...">
+                <button id="generate-btn">Generate Story</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Event button click handler
+            $('.event-btn').click(function() {
+                var event = $(this).data('event');
+                generateStory(event);
+            });
+
+            // Generate button click handler
+            $('#generate-btn').click(function() {
+                var userInput = $('#user-input').val();
+                generateStory(userInput);
+            });
+
+            function generateStory(event) {
+                if (event) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/generate',
+                        data: { event: event },
+                        success: function(response) {
+                            var userMessageEl = $('<div>').addClass('user-message').text('Event: ' + response.userMessage);
+                            var botMessageEl = $('<div>').addClass('bot-message').text('Story: ' + response.botMessage);
+                            
+                            $('#chat-messages').append(userMessageEl).append(botMessageEl);
+                            $('#user-input').val('');
+                            $('#chat-messages').scrollTop($('#chat-messages')[0].scrollHeight);
+                        }
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
